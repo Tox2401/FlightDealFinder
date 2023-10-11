@@ -2,7 +2,32 @@ import requests
 import pandas
 from datetime import datetime, timedelta
 from FlightSearch import FlightSearch
+from NotificationManager import NotificationManager
 import os
+
+
+while True:
+    registrationPrompt = input("Do you want to register and receive updates for latest cheap flights? (Y/N): ")
+
+    if registrationPrompt.upper() == "Y":
+        NotificationManager.addUser()
+
+    elif registrationPrompt.upper() == "N":
+        break
+
+    else:
+        print("Invalid input, try again (Enter Y/N) ")
+
+    while True:
+        anotherUserPrompt = input("Do you want to add another user? (Y/N): ")
+        if anotherUserPrompt.upper() == "Y":
+            NotificationManager.addUser()
+        elif anotherUserPrompt.upper() == "N":
+            break
+        else:
+            print("Invalid input, try again (Enter Y/N) ")
+
+    break
 
 headers = {
     "accept": "application/json",
@@ -13,6 +38,7 @@ flightDeals = pandas.read_csv("data/Flight Deals.csv")
 iata_codes = []
 
 for index, row in flightDeals.iterrows():
+
     parameters = {
         "term": row["City"]
     }
