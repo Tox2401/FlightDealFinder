@@ -69,3 +69,6 @@ for index, row in flightDeals.iterrows():
 
     fs = FlightSearch(flightDeals, searchParameters)
     fs.search()
+
+message = NotificationManager.messageConstructor()
+NotificationManager.notifyUsers(message)

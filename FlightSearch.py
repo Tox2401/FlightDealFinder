@@ -74,5 +74,5 @@ class FlightSearch:
         # Sort the cheapest flights by date and save them to a file
         self.cheapestFlights.sort()
         for flight in self.cheapestFlights:
-            with open(f"data/Cheapest Flights ({flight.city_to}).txt", "a") as file:
+            with open("data/Cheapest Flights.txt", "a") as file:
                 file.write(str(flight))

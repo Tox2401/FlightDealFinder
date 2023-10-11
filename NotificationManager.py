@@ -6,7 +6,7 @@ import smtplib
 class NotificationManager:
 
     @staticmethod
-    def addUser():  # Checking for existing user implementation pending
+    def addUser():
 
         while True:
             fName = input("Enter your first name: ")
@@ -20,7 +20,7 @@ class NotificationManager:
                     "email": email.lower(),
                 }
             }
-
+            # Check for existing user implementation pending
             while True:
                 confirmation = input("Is this information correct?\n"
                                      f"First name: {fName}\n"
@@ -58,7 +58,6 @@ class NotificationManager:
 
     @staticmethod
     def notifyUsers(message):
-        pass    # Write code for sending email to all users inside users.json
         connection = smtplib.SMTP("smtp.gmail.com")
         connection.starttls()
         connection.login(user=os.environ.get("EMAIL"), password=os.environ.get("EMAIL_PASS"))
@@ -69,8 +68,20 @@ class NotificationManager:
                 for key in usersData:
                     connection.sendmail(from_addr=os.environ.get("EMAIL"),
                                         to_addrs=usersData[key]["email"],
-                                        msg=f"Subject: >>SUBJECT<<\n\n{message}")
+                                        msg=f"Subject: >>SUBJECT<<\n\nDear {usersData[key]['fName']}, check the latest deals!\n"
+                                            f"{message}")
         except FileNotFoundError:
             print("No users in database")
 
         connection.close()
+
+    @staticmethod
+    def messageConstructor():
+        try:
+            with open("data/Cheapest Flights.txt", "r") as file:
+                message = file.read()
+                return message
+
+        except FileNotFoundError:
+            print("No flights found for entered parameters.")
+            pass
