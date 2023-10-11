@@ -6,7 +6,7 @@ import smtplib
 class NotificationManager:
 
     @staticmethod
-    def addUser():
+    def addUser():  # Checking for existing user implementation pending
 
         while True:
             fName = input("Enter your first name: ")
