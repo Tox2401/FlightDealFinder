@@ -4,75 +4,112 @@ from requests import HTTPError
 from FlightData import FlightData
 
 
-class FlightSearch:
+def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, maxNights):
+    file = open("data/Cheapest Flights.txt", "w")
+    file.close()
 
-    def __init__(self, flightDeals, searchParameters):
-        self.flightDeals = flightDeals
-        self.searchParameters = searchParameters
-        self.searchResults = []
-        self.cheapestFlights = []
+    headers = {
+        "accept": "application/json",
+        "apikey": os.environ.get("apikey"),
+    }
+    destinationsDict = {}
+    destinationList = destinations.split(", ")
+    searchResults = []
+    cheapestFlights = []
 
-    def search(self):
+    departureParameters = {
+        "term": departure
+    }
 
-        headers = {
-            "accept": "application/json",
-            "apikey": os.environ.get("apikey"),
+    departureResponse = requests.get(url="https://api.tequila.kiwi.com/locations/query", headers=headers,
+                                     params=departureParameters)
+    departureResponse.raise_for_status()
+    departureData = departureResponse.json()
+    departureCode = departureData['locations'][0]['code']
+
+    for destination in destinationList:
+        destinationParameters = {
+            "term": destination
         }
 
-        self.searchResults.clear()
-        self.cheapestFlights.clear()
+        destinationResponse = requests.get(url="https://api.tequila.kiwi.com/locations/query", headers=headers,
+                                           params=destinationParameters)
+        destinationResponse.raise_for_status()
+        destinationData = destinationResponse.json()
+        destinationsDict.update({destinationData["locations"][0]["code"]: destination})
+        print(f"{destinationData['locations'][0]['code']}")
+
+    print(f"Updated IATA codes.\nTotal entries: {len(destinationsDict)}")
+
+    for key in destinationsDict.keys():
+
+        searchResults.clear()
+        cheapestFlights.clear()
+
+        searchParameters = {
+            "fly_from": departureCode,
+            "fly_to": key,
+            "date_from": fromDate,
+            "date_to": toDate,
+            "curr": "EUR",
+            "max_stopovers": maxStopovers,
+            "nights_in_dst_from": minNights,
+            "nights_in_dst_to": maxNights,
+        }
+
         try:
-            print(f"Connecting to server, fetching data for {self.searchParameters['fly_to']}...")
+            print(f"Connecting to server, fetching data for {searchParameters['fly_to']}...")
             searchResponse = requests.get(url="https://api.tequila.kiwi.com/v2/search", headers=headers,
-                                          params=self.searchParameters)
+                                          params=searchParameters)
             searchResponse.raise_for_status()
             searchData = searchResponse.json()
 
-            print(f"Data for {self.searchParameters['fly_to']} retrieved.")
+            print(f"Data for {searchParameters['fly_to']} retrieved.")
             for flight in searchData["data"]:
-                self.searchResults.append(FlightData(fly_from=flight["flyFrom"],
-                                                     city_from=flight["cityFrom"],
-                                                     country_from=flight["countryFrom"],
-                                                     fly_to=flight["flyTo"],
-                                                     city_to=flight["cityTo"],
-                                                     country_to=flight["countryTo"],
-                                                     departure=flight["local_departure"],
-                                                     nights=flight["nightsInDest"],
-                                                     price=flight["price"],
-                                                     link=flight["deep_link"]
-                                                     ))
+                searchResults.append(FlightData(fly_from=flight["flyFrom"],
+                                                city_from=flight["cityFrom"],
+                                                country_from=flight["countryFrom"],
+                                                fly_to=flight["flyTo"],
+                                                city_to=flight["cityTo"],
+                                                country_to=flight["countryTo"],
+                                                departure=flight["local_departure"],
+                                                nights=flight["nightsInDest"],
+                                                price=flight["price"],
+                                                link=flight["deep_link"]
+                                                ))
 
         except HTTPError:
             print("Servers are busy, please try again in a few seconds!")
 
         try:
-            FlightSearch.searchCheapest(self)
+            # Find the cheapest flight among search results
+            cheapest_flight = searchResults[0]
+            for flight in searchResults:
+                if flight.price < cheapest_flight.price:
+                    cheapest_flight = flight
+                else:
+                    pass
+
+            # Add all cheap flights to the list
+            for flight in searchResults:
+                if flight.price == cheapest_flight.price:
+                    cheapestFlights.append(flight)
+                else:
+                    pass
+
+            # Sort the cheapest flights by date and save them to a file
+            cheapestFlights.sort()
+            for flight in cheapestFlights:
+                with open("data/Cheapest Flights.txt", "a") as file:
+                    file.write(str(flight))
 
         except IndexError:
-            print(f"No direct flights found for {self.searchParameters['fly_to']} from {self.searchParameters['fly_from']}\n")
+            print(
+                f"No direct flights found for {searchParameters['fly_to']} from {searchParameters['fly_from']}\n")
 
         else:
-            print(f"{len(self.searchResults)} flights to {self.searchParameters['fly_to']} found.")
-            print(f"Processed cheapest flights to {self.searchParameters['fly_to']}, {len(self.cheapestFlights)} flights added.\n")
+            print(f"{len(searchResults)} flights to {searchParameters['fly_to']} found.")
+            print(
+                f"Processed cheapest flights to {searchParameters['fly_to']}, {len(cheapestFlights)} flights added.\n")
 
-    def searchCheapest(self):
-        # Find the cheapest flight among search results
-        cheapest_flight = self.searchResults[0]
-        for flight in self.searchResults:
-            if flight.price < cheapest_flight.price:
-                cheapest_flight = flight
-            else:
-                pass
-
-        # Add all cheap flights to the list
-        for flight in self.searchResults:
-            if flight.price == cheapest_flight.price:
-                self.cheapestFlights.append(flight)
-            else:
-                pass
-
-        # Sort the cheapest flights by date and save them to a file
-        self.cheapestFlights.sort()
-        for flight in self.cheapestFlights:
-            with open("data/Cheapest Flights.txt", "a") as file:
-                file.write(str(flight))
+    os.startfile(os.path.abspath("data/Cheapest Flights.txt"))
