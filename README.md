@@ -1,11 +1,7 @@
 # FlightDealFinder (Early stage of development)
-Searches for flights within a specified time period to a list of desired destinations from chosen departure airport and 
-returns a series of cheapest flights with trip details and a booking link saved to a local txt file.
+Searches for flights within a specified time period to a list of desired destinations from chosen departure airport.
+Database with search history and booking links.
 
 Available search filters:
-- Min-Max period of stay for return trips
+- Min-Max period of stay
 - Max number of stopovers
-
-Pending implementation and work in progress:
-- Users database to receive flight deals on a regular basis
-- Email notification system
