@@ -72,9 +72,6 @@ def getMaxStopovers(choice):
 maxStopoversOptionMenu = OptionMenu(window, StringVar(), *stopoverOptions, command=getMaxStopovers)
 maxStopoversOptionMenu.grid(column=1, row=5, columnspan=1, sticky="W")
 
-# maxStopoversEntry = OptionMenu(window, StringVar(window, "0"), *stopovers)
-# maxStopoversEntry.grid(column=1, row=5, columnspan=1, sticky="W")
-
 stayDurationLabel = Label(text="Nights at destination:")
 stayDurationLabel.grid(column=0, row=6, columnspan=1, sticky="E")
 
