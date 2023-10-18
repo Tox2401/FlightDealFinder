@@ -1,11 +1,12 @@
 from tkinter import *
 from FlightSearch import search
+from DataManager import showSearchHistory, clearSearchHistory
 
 
-window = Tk()
-window.title("Flight Deal Finder")
-window.geometry("350x500")
-window.config(padx=10, pady=10)
+masterWindow = Tk()
+masterWindow.title("Flight Deal Finder")
+masterWindow.geometry("350x550")
+masterWindow.config(padx=10, pady=10)
 
 canvas = Canvas(width=320, height=320, highlightthickness=0)
 logoImg = PhotoImage(file="data/logo.png")
@@ -69,7 +70,7 @@ def getMaxStopovers(choice):
     stopovers = int(choice)
 
 
-maxStopoversOptionMenu = OptionMenu(window, StringVar(), *stopoverOptions, command=getMaxStopovers)
+maxStopoversOptionMenu = OptionMenu(masterWindow, StringVar(), *stopoverOptions, command=getMaxStopovers)
 maxStopoversOptionMenu.grid(column=1, row=5, columnspan=1, sticky="W")
 
 stayDurationLabel = Label(text="Nights at destination:")
@@ -103,5 +104,10 @@ searchBtn = Button(text="Search", command=lambda: search(departure=fromAirportIn
                                                          maxNights=int(maxNightsEntry.get())))
 searchBtn.grid(column=0, row=7, columnspan=4, sticky="EW")
 
+searchBtn = Button(text="Search history", command=lambda: showSearchHistory(masterWindow))
+searchBtn.grid(column=0, row=8, columnspan=4, sticky="EW")
+searchBtn = Button(text="Clear history", command=lambda: clearSearchHistory())
+searchBtn.grid(column=0, row=9, columnspan=4, sticky="EW")
 
-window.mainloop()
+
+masterWindow.mainloop()

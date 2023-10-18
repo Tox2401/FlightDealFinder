@@ -2,11 +2,25 @@ import os
 import requests
 from requests import HTTPError
 from FlightData import FlightData
+import sqlite3
+from datetime import datetime
 
 
 def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, maxNights):
-    file = open("data/Cheapest Flights.txt", "w")
-    file.close()
+    # Create a table name
+    search_timestamp = f'search_{datetime.now().strftime("%d/%m/%y_%H:%M:%S")}'
+    # Connect to database and create table to store results
+    connection = sqlite3.connect("database.db")
+    cursor = connection.cursor()
+    cursor.execute(f"create table '{search_timestamp}' ("
+                   "flying_from text,"
+                   "flying_to text,"
+                   "departure_date text,"
+                   "departure_time text,"
+                   "nights_at_destination text,"
+                   "price text,"
+                   "booking_link text"
+                   ")")
 
     headers = {
         "accept": "application/json",
@@ -79,7 +93,7 @@ def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, m
                                                 ))
 
         except HTTPError:
-            print("Servers are busy, please try again in a few seconds!")
+            print("Servers are busy, please try again in a few seconds! No data has been fetched.")
 
         try:
             # Find the cheapest flight among search results
@@ -100,8 +114,7 @@ def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, m
             # Sort the cheapest flights by date and save them to a file
             cheapestFlights.sort()
             for flight in cheapestFlights:
-                with open("data/Cheapest Flights.txt", "a") as file:
-                    file.write(str(flight))
+                cursor.execute(f"insert into '{search_timestamp}' values (?,?,?,?,?,?,?)", (flight.formatted_from, flight.formatted_to, flight.departure_date, flight.departure_time, flight.nights_in_dest, flight.price, flight.deep_link))
 
         except IndexError:
             print(
@@ -112,4 +125,5 @@ def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, m
             print(
                 f"Processed cheapest flights to {searchParameters['fly_to']}, {len(cheapestFlights)} flights added.\n")
 
-    os.startfile(os.path.abspath("data/Cheapest Flights.txt"))
+    connection.commit()
+    connection.close()
