@@ -114,7 +114,9 @@ def search(departure, destinations, fromDate, toDate, maxStopovers, minNights, m
             # Sort the cheapest flights by date and save them to a file
             cheapestFlights.sort()
             for flight in cheapestFlights:
-                cursor.execute(f"insert into '{search_timestamp}' values (?,?,?,?,?,?,?)", (flight.formatted_from, flight.formatted_to, flight.departure_date, flight.departure_time, flight.nights_in_dest, flight.price, flight.deep_link))
+                cursor.execute(f"insert into '{search_timestamp}' values (?,?,?,?,?,?,?)",
+                               (flight.formatted_from, flight.formatted_to, flight.departure_date,
+                                flight.departure_time, flight.nights_in_dest, flight.price, flight.deep_link))
 
         except IndexError:
             print(
