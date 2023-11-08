@@ -1,113 +1,110 @@
 from tkinter import *
 from FlightSearch import search
-from DataManager import showSearchHistory, clearSearchHistory
+from DataManager import show_search_history, clear_search_history
 
 
-masterWindow = Tk()
-masterWindow.title("Flight Deal Finder")
-masterWindow.geometry("350x550")
-masterWindow.config(padx=10, pady=10)
+def get_max_stopovers():
+    stopovers = stopovers_choice.get()
+    return stopovers
+
+
+master_window = Tk()
+master_window.title("Flight Deal Finder")
+master_window.geometry("350x550")
+master_window.config(padx=10, pady=10)
 
 canvas = Canvas(width=320, height=320, highlightthickness=0)
 logoImg = PhotoImage(file="data/logo.png")
 canvas.create_image(160, 160, image=logoImg)
 canvas.grid(column=0, row=0, columnspan=4)
 
-departureAirportLabel = Label(text="Departure airport:")
-departureAirportLabel.grid(column=0, row=1, columnspan=1, sticky="E")
+departure_airport_label = Label(text="Departure airport:")
+departure_airport_label.grid(column=0, row=1, columnspan=1, sticky="E")
 
-fromAirportInput = Entry()
-fromAirportInput.insert(0, "E.g. Zagreb")
-fromAirportInput.bind("<FocusIn>",
-                      lambda event: fromAirportInput.delete(0, "end") if fromAirportInput.get() == "E.g. Zagreb" else None)
-fromAirportInput.bind("<FocusOut>",
-                      lambda event: fromAirportInput.insert(0, "E.g. Zagreb") if fromAirportInput.get() == "" else None)
-fromAirportInput.grid(column=1, row=1, columnspan=3, sticky="EW")
+departure_airport_input = Entry()
+departure_airport_input.insert(0, "E.g. Zagreb")
+departure_airport_input.bind("<FocusIn>",
+                             lambda event: departure_airport_input.delete(0, "end") if departure_airport_input.get() == "E.g. Zagreb" else None)
+departure_airport_input.bind("<FocusOut>",
+                             lambda event: departure_airport_input.insert(0, "E.g. Zagreb") if departure_airport_input.get() == "" else None)
+departure_airport_input.grid(column=1, row=1, columnspan=3, sticky="EW")
 
-destinationAirportLabel = Label(text="Destination airport/s:")
-destinationAirportLabel.grid(column=0, row=2, columnspan=1, sticky="E")
+destination_airport_label = Label(text="Destination airport/s:")
+destination_airport_label.grid(column=0, row=2, columnspan=1, sticky="E")
 
-toAirportInput = Entry()
-toAirportInput.insert(0, "E.g. Paris, London, Oslo, Athens")
-toAirportInput.bind("<FocusIn>",
-                    lambda event: toAirportInput.delete(0, "end") if toAirportInput.get() == "E.g. Paris, London, Oslo, Athens" else None)
-toAirportInput.bind("<FocusOut>",
-                    lambda event: toAirportInput.insert(0, "E.g. Paris, London, Oslo, Athens") if toAirportInput.get() == "" else None)
-toAirportInput.grid(column=1, row=2, columnspan=3, sticky="EW")
+destination_airport_input = Entry()
+destination_airport_input.insert(0, "E.g. Paris, London, Oslo, Athens")
+destination_airport_input.bind("<FocusIn>",
+                               lambda event: destination_airport_input.delete(0, "end") if destination_airport_input.get() == "E.g. Paris, London, Oslo, Athens" else None)
+destination_airport_input.bind("<FocusOut>",
+                               lambda event: destination_airport_input.insert(0, "E.g. Paris, London, Oslo, Athens") if destination_airport_input.get() == "" else None)
+destination_airport_input.grid(column=1, row=2, columnspan=3, sticky="EW")
 
-fromDateLabel = Label(text="Date from:")
-fromDateLabel.grid(column=0, row=3, columnspan=1, sticky="E")
+from_date_label = Label(text="Date from:")
+from_date_label.grid(column=0, row=3, columnspan=1, sticky="E")
 
-fromDateEntry = Entry()
-fromDateEntry.insert(0, "dd/mm/yyyy (E.g. 15/12/2023)")
-fromDateEntry.bind("<FocusIn>",
-                    lambda event: fromDateEntry.delete(0, "end") if fromDateEntry.get() == "dd/mm/yyyy (E.g. 15/12/2023)" else None)
-fromDateEntry.bind("<FocusOut>",
-                    lambda event: fromDateEntry.insert(0, "dd/mm/yyyy (E.g. 15/12/2023)") if fromDateEntry.get() == "" else None)
-fromDateEntry.grid(column=1, row=3, columnspan=3, sticky="EW")
+from_date_entry = Entry()
+from_date_entry.insert(0, "dd/mm/yyyy (E.g. 15/12/2023)")
+from_date_entry.bind("<FocusIn>",
+                     lambda event: from_date_entry.delete(0, "end") if from_date_entry.get() == "dd/mm/yyyy (E.g. 15/12/2023)" else None)
+from_date_entry.bind("<FocusOut>",
+                     lambda event: from_date_entry.insert(0, "dd/mm/yyyy (E.g. 15/12/2023)") if from_date_entry.get() == "" else None)
+from_date_entry.grid(column=1, row=3, columnspan=3, sticky="EW")
 
-toDateLabel = Label(text="Date to:")
-toDateLabel.grid(column=0, row=4, columnspan=1, sticky="E")
+to_date_label = Label(text="Date to:")
+to_date_label.grid(column=0, row=4, columnspan=1, sticky="E")
 
-toDateEntry = Entry()
-toDateEntry.insert(0, "dd/mm/yyyy (E.g. 15/01/2024)")
-toDateEntry.bind("<FocusIn>",
-                    lambda event: toDateEntry.delete(0, "end") if toDateEntry.get() == "dd/mm/yyyy (E.g. 15/01/2024)" else None)
-toDateEntry.bind("<FocusOut>",
-                    lambda event: toDateEntry.insert(0, "dd/mm/yyyy (E.g. 15/01/2024)") if toDateEntry.get() == "" else None)
-toDateEntry.grid(column=1, row=4, columnspan=3, sticky="EW")
+to_date_entry = Entry()
+to_date_entry.insert(0, "dd/mm/yyyy (E.g. 15/01/2024)")
+to_date_entry.bind("<FocusIn>",
+                   lambda event: to_date_entry.delete(0, "end") if to_date_entry.get() == "dd/mm/yyyy (E.g. 15/01/2024)" else None)
+to_date_entry.bind("<FocusOut>",
+                   lambda event: to_date_entry.insert(0, "dd/mm/yyyy (E.g. 15/01/2024)") if to_date_entry.get() == "" else None)
+to_date_entry.grid(column=1, row=4, columnspan=3, sticky="EW")
 
-maxStopoversLabel = Label(text="Max stopovers:")
-maxStopoversLabel.grid(column=0, row=5, columnspan=1, sticky="E")
+max_stopovers_label = Label(text="Max stopovers:")
+max_stopovers_label.grid(column=0, row=5, columnspan=1, sticky="E")
 
+stopover_options = ["0", "1", "2", "3", "4", "5"]
+stopovers_choice = StringVar()
+max_stopovers_optionmenu = OptionMenu(master_window, stopovers_choice, *stopover_options)
+max_stopovers_optionmenu.grid(column=1, row=5, columnspan=1, sticky="W")
 
-stopoverOptions = ["0", "1", "2", "3", "4", "5"]
-stopovers = None
+stay_duration_label = Label(text="Nights at destination:")
+stay_duration_label.grid(column=0, row=6, columnspan=1, sticky="E")
 
+min_nights_entry = Entry(width=6)
+min_nights_entry.insert(0, "E.g. 7")
+min_nights_entry.bind("<FocusIn>",
+                      lambda event: min_nights_entry.delete(0, "end") if min_nights_entry.get() == "E.g. 7" else None)
+min_nights_entry.bind("<FocusOut>",
+                      lambda event: min_nights_entry.insert(0, "E.g. 7") if min_nights_entry.get() == "" else None)
+min_nights_entry.grid(column=1, row=6, columnspan=1, sticky="E")
 
-def getMaxStopovers(choice):
-    global stopovers
-    stopovers = int(choice)
+to_duration_label = Label(text="-", width=2)
+to_duration_label.grid(column=2, row=6, columnspan=1)
 
+max_nights_entry = Entry(width=6)
+max_nights_entry.insert(0, "E.g. 14")
+max_nights_entry.bind("<FocusIn>",
+                      lambda event: max_nights_entry.delete(0, "end") if max_nights_entry.get() == "E.g. 14" else None)
+max_nights_entry.bind("<FocusOut>",
+                      lambda event: max_nights_entry.insert(0, "E.g. 14") if max_nights_entry.get() == "" else None)
+max_nights_entry.grid(column=3, row=6, columnspan=1, sticky="W")
 
-maxStopoversOptionMenu = OptionMenu(masterWindow, StringVar(), *stopoverOptions, command=getMaxStopovers)
-maxStopoversOptionMenu.grid(column=1, row=5, columnspan=1, sticky="W")
+search_button = Button(text="Search", command=lambda: search(departure=departure_airport_input.get(),
+                                                             destinations=destination_airport_input.get(),
+                                                             from_date=from_date_entry.get(),
+                                                             to_date=to_date_entry.get(),
+                                                             max_stopovers=get_max_stopovers(),
+                                                             min_nights=int(min_nights_entry.get()),
+                                                             max_nights=int(max_nights_entry.get())))
+search_button.grid(column=0, row=7, columnspan=4, sticky="EW")
 
-stayDurationLabel = Label(text="Nights at destination:")
-stayDurationLabel.grid(column=0, row=6, columnspan=1, sticky="E")
+show_search_history_button = Button(text="Show search history", command=lambda: show_search_history(master_window))
+show_search_history_button.grid(column=0, row=8, columnspan=4, sticky="EW")
 
-minNightsEntry = Entry(width=6)
-minNightsEntry.insert(0, "E.g. 7")
-minNightsEntry.bind("<FocusIn>",
-                    lambda event: minNightsEntry.delete(0, "end") if minNightsEntry.get() == "E.g. 7" else None)
-minNightsEntry.bind("<FocusOut>",
-                    lambda event: minNightsEntry.insert(0, "E.g. 7") if minNightsEntry.get() == "" else None)
-minNightsEntry.grid(column=1, row=6, columnspan=1, sticky="E")
+clear_search_history_button = Button(text="Clear history", command=lambda: clear_search_history())
+clear_search_history_button.grid(column=0, row=9, columnspan=4, sticky="EW")
 
-toDurationLabel = Label(text="-", width=2)
-toDurationLabel.grid(column=2, row=6, columnspan=1)
-
-maxNightsEntry = Entry(width=6)
-maxNightsEntry.insert(0, "E.g. 14")
-maxNightsEntry.bind("<FocusIn>",
-                    lambda event: maxNightsEntry.delete(0, "end") if maxNightsEntry.get() == "E.g. 14" else None)
-maxNightsEntry.bind("<FocusOut>",
-                    lambda event: maxNightsEntry.insert(0, "E.g. 14") if maxNightsEntry.get() == "" else None)
-maxNightsEntry.grid(column=3, row=6, columnspan=1, sticky="W")
-
-searchBtn = Button(text="Search", command=lambda: search(departure=fromAirportInput.get(),
-                                                         destinations=toAirportInput.get(),
-                                                         fromDate=fromDateEntry.get(),
-                                                         toDate=toDateEntry.get(),
-                                                         maxStopovers=stopovers,
-                                                         minNights=int(minNightsEntry.get()),
-                                                         maxNights=int(maxNightsEntry.get())))
-searchBtn.grid(column=0, row=7, columnspan=4, sticky="EW")
-
-searchBtn = Button(text="Search history", command=lambda: showSearchHistory(masterWindow))
-searchBtn.grid(column=0, row=8, columnspan=4, sticky="EW")
-searchBtn = Button(text="Clear history", command=lambda: clearSearchHistory())
-searchBtn.grid(column=0, row=9, columnspan=4, sticky="EW")
-
-
-masterWindow.mainloop()
+master_window.mainloop()
